@@ -16,7 +16,7 @@ export class GroqService {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          model: 'llama-3.1-8b-instant',
+          model: 'llama3-70b-8192', // Updated model
           messages,
           temperature,
           max_tokens: 2048,
