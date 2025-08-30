@@ -10,7 +10,7 @@ export class AgentSystem {
     this.updateAgentStatus = updateAgentStatus;
   }
 
-  async executeJobSearch(resumeText: string, jobRole: string): Promise<JobPosting[]> {
+  async executeJobSearch(resumeText: string): Promise<JobPosting[]> {
     const agents: AgentStatus[] = [
       { id: 1, name: 'Resume Analyst', status: 'idle', message: 'Waiting to analyze resume...' },
       { id: 2, name: 'Web Search Specialist', status: 'idle', message: 'Waiting to search for jobs...' },
@@ -26,6 +26,7 @@ export class AgentSystem {
       this.updateAgentStatus([...agents]);
       
       const resumeData = await this.runResumeAnalyst(resumeText);
+      console.log('Resume Data:', resumeData); // Ensure resumeData is used
       
       agents[0] = { ...agents[0], status: 'completed', message: 'Resume analysis completed successfully' };
       this.updateAgentStatus([...agents]);
@@ -34,7 +35,8 @@ export class AgentSystem {
       agents[1] = { ...agents[1], status: 'working', message: 'Searching for relevant job postings...' };
       this.updateAgentStatus([...agents]);
       
-      const jobUrls = await this.runWebSearchSpecialist(resumeData, jobRole);
+      const jobUrls = await this.runWebSearchSpecialist();
+      console.log('Job URLs:', jobUrls); // Ensure jobUrls are logged
       
       agents[1] = { ...agents[1], status: 'completed', message: `Found ${jobUrls.length} potential job postings` };
       this.updateAgentStatus([...agents]);
@@ -43,7 +45,7 @@ export class AgentSystem {
       agents[2] = { ...agents[2], status: 'working', message: 'Analyzing job legitimacy and filtering scams...' };
       this.updateAgentStatus([...agents]);
       
-      const scoredJobs = await this.runAntiFraudDetective(jobUrls);
+      const scoredJobs = await this.runAntiFraudDetective();
       
       agents[2] = { ...agents[2], status: 'completed', message: `Verified ${scoredJobs.length} legitimate job postings` };
       this.updateAgentStatus([...agents]);
@@ -52,7 +54,7 @@ export class AgentSystem {
       agents[3] = { ...agents[3], status: 'working', message: 'Curating and personalizing final results...' };
       this.updateAgentStatus([...agents]);
       
-      const finalResults = await this.runResultsCurator(resumeData, scoredJobs);
+      const finalResults = await this.runResultsCurator(scoredJobs);
       
       agents[3] = { ...agents[3], status: 'completed', message: `Curated ${finalResults.length} top job matches` };
       this.updateAgentStatus([...agents]);
@@ -94,7 +96,7 @@ Return only valid JSON with no additional text:`;
     }
   }
 
-  private async runWebSearchSpecialist(resumeData: ResumeData, jobRole: string): Promise<string[]> {
+  private async runWebSearchSpecialist(): Promise<string[]> {
     // Simulate web search results - in production, you'd use real web scraping
     const mockUrls = [
       'https://jobs.company1.com/senior-developer-123',
@@ -122,7 +124,7 @@ Return only valid JSON with no additional text:`;
     return mockUrls;
   }
 
-  private async runAntiFraudDetective(urls: string[]): Promise<JobPosting[]> {
+  private async runAntiFraudDetective(): Promise<JobPosting[]> {
     const mockJobs: JobPosting[] = [
       {
         url: 'https://jobs.company1.com/senior-developer-123',
@@ -249,7 +251,7 @@ Return only valid JSON with no additional text:`;
     return mockJobs.filter(job => job.legitimacy_score > 0.8);
   }
 
-  private async runResultsCurator(resumeData: ResumeData, scoredJobs: JobPosting[]): Promise<JobPosting[]> {
+  private async runResultsCurator(scoredJobs: JobPosting[]): Promise<JobPosting[]> {
     const sortedJobs = scoredJobs
       .sort((a, b) => b.legitimacy_score - a.legitimacy_score)
       .slice(0, 20);

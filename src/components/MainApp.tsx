@@ -66,13 +66,14 @@ export const MainApp: React.FC<MainAppProps> = ({ apiKey, onLogout }) => {
     } catch (error) {
       setState(prev => ({ 
         ...prev, 
+        results: [],
         error: error instanceof Error ? error.message : 'Job search failed',
         isSearching: false
       }));
     }
   };
 
-  const canSearch = state.resume && state.resumeText && state.jobRole.trim().length > 0;
+  const canSearch = Boolean(state.resume && state.resumeText && state.jobRole.trim());
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">

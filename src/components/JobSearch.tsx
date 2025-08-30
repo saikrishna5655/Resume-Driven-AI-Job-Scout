@@ -18,6 +18,7 @@ export const JobSearch: React.FC<JobSearchProps> = ({
 }) => {
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && canSearch && !isSearching) {
+      console.log('Search triggered with job role:', jobRole); // Debugging log
       onSearch();
     }
   };
